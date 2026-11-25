@@ -1,7 +1,7 @@
 # SDiT: Region-Adaptive Sparse Inference for Diffusion Transformers
 
 [Manuscript](https://github.com/linbowen0719-beep/ICLR-2027-SDiT) ·
-[Quickstart](#installation) · [Measured results](#example-benchmark) ·
+[Quickstart](#installation) · [Paper results](#paper-results) ·
 [Method](#how-it-works) · [Citation](#citation)
 
 **Training-free acceleration through one shared region partition.** SDiT
@@ -11,54 +11,59 @@ supports **Lumina-Next** and **HunyuanDiT**.
 
 ## Visual comparison
 
-**“Peacock in a sunlit garden”** — Lumina-Next, seed 42, 30 steps, 1024×1024.
+![Paper Figure 1: Dense, RAS, TeaCache and SDiT generations with timing labels and region outlines](assets/paper-comparison.png)
 
-<table>
-<tr><th>Dense</th><th>SDiT · ρ = 0.4</th><th>SDiT · ρ = 0.2</th></tr>
-<tr>
-<td width="33%"><img src="assets/peacock-dense.png" alt="Dense Lumina-Next output for Peacock in a sunlit garden" width="100%"></td>
-<td width="33%"><img src="assets/peacock-r40.png" alt="SDiT output with 40 percent active regions, same prompt and seed" width="100%"></td>
-<td width="33%"><img src="assets/peacock-r20.png" alt="SDiT output with 20 percent active regions, same prompt and seed" width="100%"></td>
-</tr>
-<tr><td align="center">17.50 s · 1.00×</td><td align="center">8.09 s · 2.16×</td><td align="center">6.27 s · 2.79×</td></tr>
-</table>
+Figure 1 from the paper: Lumina-Next at 30 steps and 1024×1024.
+SDiT preserves fine geometric patterns at **6.49 s (3.65× speedup)**.
 
-Images are the original generated PNGs. Times average two warmed runs of this
-prompt on the same RTX 6000 Ada. Lower ρ refreshes fewer regions; compare both
-settings to choose the quality–latency trade-off for your prompts.
+## Paper results
 
-## Example benchmark
+Results reported in **Table 1 of the paper**, evaluated on **5,000 MS-COCO
+prompts at 30 steps and 1024×1024**. FID_d compares against dense generations;
+FID_r compares against real COCO images. Control is each method's setting
+(the active-region ratio ρ for SDiT). Bold marks the best accelerated result
+per metric within each backbone.
 
-Measured on **one RTX 6000 Ada (48 GB)** using the
-[two fixed prompts and seeds](examples/prompts.jsonl) shipped with this repo.
-All methods use 30 steps, 1024×1024, guidance 4 and BF16. Each prompt has one
-excluded warm-up and two timed repeats. Quality metrics average the two paired
-images against dense inference; LPIPS uses AlexNet.
+### Lumina-Next
 
-| Method | Time ↓ | Speedup ↑ | PSNR ↑ | SSIM ↑ | LPIPS ↓ | Peak allocation |
+| Method | Control | Time (s) ↓ | Speedup ↑ | FID_d ↓ | FID_r ↓ | PSNR (dB) ↑ |
 |---|---:|---:|---:|---:|---:|---:|
-| Dense | 18.09 s | 1.00× | — | — | — | 10.40 GiB |
-| SDiT · ρ=0.4 | 7.70 s | 2.35× | 25.34 dB | 0.737 | 0.227 | 10.82 GiB |
-| SDiT · ρ=0.2 | 5.90 s | 3.07× | 23.31 dB | 0.650 | 0.387 | 10.82 GiB |
+| Dense | 1.00 | 23.72 | 1.00× | — | 29.63 | — |
+| SDiT | 0.60 | 10.74 | 2.21× | 6.93 | **30.07** | 24.06 |
+| SDiT | 0.40 | 8.70 | 2.73× | **6.66** | 30.71 | **24.30** |
+| SDiT | 0.20 | 6.49 | 3.65× | 9.13 | 32.12 | 23.53 |
+| SDiT | 0.10 | **5.89** | **4.03**× | 22.03 | 39.73 | 22.36 |
+| RAS | 0.50 | 13.92 | 1.70× | 11.74 | 32.67 | 22.57 |
+| RAS | 0.25 | 10.31 | 2.30× | 20.82 | 39.25 | 21.23 |
+| TeaCache | 0.30 | 8.74 | 2.71× | 8.20 | 33.33 | 24.04 |
+| TeaCache | 0.20 | 6.55 | 3.62× | 15.31 | 37.97 | 20.75 |
 
-Peak allocation is measured by PyTorch. [Per-run times, image hashes, versions
-and metrics](docs/readme_benchmark.json) accompany this table.
-These are current-release example measurements; the paper's dataset-scale
-results use its historical experimental configuration.
+<details>
+<summary><strong>HunyuanDiT results</strong></summary>
 
-Reproduce this table after installing the quality-evaluation dependencies:
+| Method | Control | Time (s) ↓ | Speedup ↑ | FID_d ↓ | FID_r ↓ | PSNR (dB) ↑ |
+|---|---:|---:|---:|---:|---:|---:|
+| Dense | 1.00 | 11.96 | 1.00× | — | 34.86 | — |
+| SDiT | 0.50 | 6.82 | 1.75× | **12.74** | 29.48 | 15.06 |
+| SDiT | 0.40 | 5.84 | 2.05× | 17.74 | **29.24** | 14.13 |
+| SDiT | 0.30 | 4.79 | 2.50× | 29.19 | 32.49 | 13.30 |
+| SDiT | 0.20 | **4.00** | **2.99**× | 66.83 | 58.10 | 12.20 |
+| RAS | 0.40 | 12.56 | 0.95× | 44.86 | 42.21 | 12.74 |
+| RAS | 0.30 | 11.27 | 1.06× | 74.36 | 65.29 | 12.08 |
+| TeaCache | 0.75 | 5.63 | 2.13× | 41.79 | 39.54 | **15.13** |
+| TeaCache | 1.00 | 4.89 | 2.45× | 72.17 | 62.18 | 14.68 |
 
-```bash
-CUDA_VISIBLE_DEVICES=0 python scripts/benchmark_examples.py --output outputs/readme
-```
+</details>
 
-The script runs all variants sequentially, checks that timed and evaluated
-images match, and writes `measurements.json`. Add `--model-path /path/to/model
---local-files-only` to use a local checkpoint.
+[Full paper table](https://github.com/linbowen0719-beep/ICLR-2027-SDiT/blob/main/table/table_main_result.tex)
+includes CLIP and MUSIQ. These are paper-reported results under the paper's
+experimental configuration; see [implementation provenance](docs/implementation.md#release-provenance).
 
 ## How it works
 
-![SDiT method: a shared region partition coordinates temporal reuse and local-plus-remote attention](assets/method.svg)
+![SDiT method: a shared region partition coordinates temporal reuse and local-plus-remote attention](assets/paper-method.png)
+
+The framework figure above is reproduced from the paper.
 
 After a dense warm-up, Quickshift partitions the predicted clean latent once.
 A detail/residual score and refresh history select active regions. Their queries
@@ -109,12 +114,9 @@ The runner downloads the matching checkpoint on first use. For an existing
 Diffusers snapshot, pass `--model-path /path/to/model --local-files-only`.
 Weights are distributed by the model providers under their respective licenses.
 
-At batch size 1 and 1024×1024, this release measured **10.82 GiB** peak
-PyTorch allocation for Lumina SDiT in the example benchmark and **11.33 GiB**
-for the [Hunyuan ρ=0.2 validation run](docs/validation.json). GPU capacity also
-needs headroom for CUDA contexts, reserved memory and workspaces. The tested
-card has 48 GB; a minimum capacity and 24 GB RTX 3090/4090 compatibility have
-not yet been established. CPU inference and CPU offload are not implemented.
+The tested GPU is an RTX 6000 Ada (48 GB). A minimum GPU capacity and
+24 GB RTX 3090/4090 compatibility have not yet been established. CPU inference
+and CPU offload are not implemented.
 
 ## Generate an image
 
@@ -174,8 +176,7 @@ seeds, model settings and saved-image hashes. The previous `sdit-evaluate` comma
 
 For dataset-scale evaluation, add `--fid` to compute **FID_d** against the dense
 image set, and `--real /path/to/real-images` for **FID_r** against real images.
-Use the full evaluation set for FID; the two-image example reports paired
-metrics. See [metric definitions and commands](docs/evaluation.md).
+Use the full evaluation set for FID. See [metric definitions and commands](docs/evaluation.md).
 
 ## Repository layout
 
@@ -184,8 +185,8 @@ metrics. See [metric definitions and commands](docs/evaluation.md).
 | `src/sdit/` | Public CLI, configuration, manuscript policy and evaluation |
 | `src/ras/` | Scheduling, attention, caches and model adapters |
 | `configs/` | Explicit Lumina and Hunyuan settings |
-| `examples/` | Prompt/seed manifest used in the example benchmark |
-| `assets/` | Original comparison images and method diagram |
+| `examples/` | Sample prompts and seeds for generation |
+| `assets/` | Comparison and framework figures from the paper |
 | `scripts/` | Example benchmark driver and release-content audit |
 | `tests/` | Numerical, cache, scheduling and CLI tests |
 | `docs/` | Implementation guide, metrics and measurement records |
@@ -205,7 +206,7 @@ python scripts/check_release.py
   can need more active computation or richer remote summaries.
 - The current release implements the manuscript's reference policy. The original
   experimental snapshot used different settings for several policy details;
-  the new measurements above describe this release. See
+  see
   [policy provenance](docs/implementation.md#release-provenance).
 - Use one worker process per GPU: the inherited manager holds process-global
   state. This release supports image inference, with video left for future work.
