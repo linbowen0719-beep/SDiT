@@ -68,6 +68,8 @@ def parser():
     p = argparse.ArgumentParser(description="SDiT image inference and benchmarking")
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("doctor", help="Print environment and CUDA availability")
+    from .evaluate import add_arguments
+    add_arguments(sub.add_parser("evaluate", help="Compute paired dense-reference quality metrics"))
     for name in ("generate", "benchmark"):
         q = sub.add_parser(name)
         q.add_argument("--config", type=Path)
@@ -95,6 +97,10 @@ def main():
     a = p.parse_args()
     if a.command == "doctor":
         print(json.dumps(environment(), indent=2))
+        return
+    if a.command == "evaluate":
+        from .evaluate import run
+        run(a, p)
         return
     keys = ("model", "method", "steps", "rho", "anchors", "hops", "backend", "height", "width", "guidance_scale", "warmup_steps", "analysis")
     try:

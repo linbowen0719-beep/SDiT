@@ -8,7 +8,6 @@ import math
 import numpy as np
 from PIL import Image
 from skimage.metrics import structural_similarity
-from .cli import write_json
 
 
 def load_run(directory):
@@ -50,8 +49,7 @@ def validate_pair(generated, dense):
     return gm, gr, dr
 
 
-def main():
-    p = argparse.ArgumentParser(description=__doc__)
+def add_arguments(p):
     p.add_argument('--generated', type=Path, required=True)
     p.add_argument('--dense', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
@@ -59,7 +57,10 @@ def main():
     p.add_argument('--fid', action='store_true', help='Compute FID_d against dense reference')
     p.add_argument('--real', type=Path, help='Explicit real-image reference directory for FID_r (requires --fid)')
     p.add_argument('--cpu', action='store_true')
-    a = p.parse_args()
+
+
+def run(a, p):
+    from .cli import write_json
     if a.output.exists():
         p.error('Output already exists; choose a new path')
     if a.real and not a.fid:
@@ -115,6 +116,12 @@ def main():
     a.output.parent.mkdir(parents=True, exist_ok=True)
     write_json(a.output, result)
     print(json.dumps(summary, indent=2))
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    add_arguments(p)
+    run(p.parse_args(), p)
 
 
 if __name__ == '__main__':

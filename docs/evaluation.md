@@ -33,7 +33,7 @@ sets can change numbers. Do not mix the two FID reference sets.
 
 ```bash
 python -m pip install -e '.[metrics]'
-sdit-evaluate --generated outputs/sdit --dense outputs/dense \
+sdit evaluate --generated outputs/sdit --dense outputs/dense \
   --lpips --fid --real /path/to/selected-real-images \
   --output outputs/quality-full.json
 ```

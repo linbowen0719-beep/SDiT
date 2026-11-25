@@ -95,3 +95,24 @@ def test_metrics_reject_different_seeds(tmp_path):
         Image.new('RGB',(16,16)).save(d/'x.png')
     with pytest.raises(ValueError,match='identical'):
         validate_pair(tmp_path/'sdit',tmp_path/'dense')
+
+
+def test_evaluate_subcommand_and_legacy_entrypoint_agree(tmp_path):
+    from PIL import Image
+    for method in ('sdit','dense'):
+        directory=tmp_path/method;directory.mkdir()
+        (directory/'run.json').write_text(json.dumps(dict(command='generate',
+            config=InferenceConfig(method=method).to_dict(),model='test',
+            prompts=[dict(id='same',prompt='test',seed=42)])))
+        (directory/'results.json').write_text(json.dumps([dict(id='same',image='same.png')]))
+        Image.new('RGB',(16,16),(32,64,128)).save(directory/'same.png')
+    outputs=[]
+    for module,args,name in [('sdit.cli',['evaluate'],'new'),('sdit.evaluate',[],'legacy')]:
+        output=tmp_path/(name+'.json')
+        result=subprocess.run([sys.executable,'-m',module,*args,'--generated',str(tmp_path/'sdit'),
+            '--dense',str(tmp_path/'dense'),'--output',str(output)],capture_output=True,text=True)
+        assert result.returncode==0,result.stderr
+        outputs.append(json.loads(output.read_text()))
+    assert outputs[0]==outputs[1]
+    assert outputs[0]['summary']['ssim']==1
+    assert outputs[0]['summary']['psnr_infinite'] is True

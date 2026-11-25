@@ -4,3 +4,5 @@ recursive-include configs *.json
 recursive-include docs *.md *.json
 recursive-include examples *.jsonl
 recursive-include tests *.py
+recursive-include assets *.svg *.png
+recursive-include scripts *.py

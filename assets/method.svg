@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="650" viewBox="0 0 1120 650" role="img" aria-labelledby="title desc">
+<title id="title">SDiT uses one region partition for temporal reuse and sparse attention</title>
+<desc id="desc">Dense warm-up predicts a clean latent. Quickshift creates a fixed region partition. Region priority chooses active regions; their queries attend to local tokens and remote summaries. Inactive predictions are reused. Region-contiguous layouts support grouped SDPA, then the sampler updates the latent.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#526479"/></marker></defs>
+<rect width="1120" height="650" rx="18" fill="#f5f8fc"/>
+<g font-family="Arial,Helvetica,sans-serif" fill="#15263b">
+<text x="36" y="44" font-size="28" font-weight="700">One partition. Two sources of saved computation.</text>
+<text x="36" y="73" font-size="16" fill="#526479">Dense warm-up → fixed content-aware regions → selective updates with compact attention</text>
+<g fill="white" stroke="#ced9e6" stroke-width="1.5">
+<rect x="36" y="108" width="220" height="135" rx="12"/>
+<rect x="298" y="108" width="220" height="135" rx="12"/>
+<rect x="560" y="108" width="220" height="135" rx="12"/>
+<rect x="822" y="108" width="262" height="135" rx="12"/>
+</g>
+<g font-size="20" font-weight="700">
+<text x="55" y="141">Dense warm-up</text><text x="317" y="141">Clean estimate</text>
+<text x="579" y="141">Shared regions</text><text x="841" y="141">Contiguous layout</text>
+</g>
+<g font-size="16" fill="#526479">
+<text x="55" y="176">First 20% of steps</text><text x="55" y="203">Initialize prediction / KV</text>
+<text x="317" y="176">Predict clean latent</text><text x="317" y="203">Quickshift after warm-up</text>
+<text x="579" y="222">Fixed for later steps</text><text x="841" y="222">Group tokens by region</text>
+</g>
+<g stroke="white" stroke-width="2">
+<path d="M579 157h45v20h-45z M579 177h23v20h-23z" fill="#4884d9"/>
+<path d="M624 157h46v20h-46z M602 177h45v20h-45z" fill="#61b3a3"/>
+<path d="M670 157h46v20h-46z M647 177h23v20h-23z" fill="#f3bf59"/>
+<path d="M716 157h45v20h-45z M670 177h91v20h-91z" fill="#bd9ad7"/>
+<rect x="841" y="161" width="49" height="33" rx="3" fill="#4884d9"/>
+<rect x="890" y="161" width="49" height="33" rx="3" fill="#61b3a3"/>
+<rect x="939" y="161" width="49" height="33" rx="3" fill="#f3bf59"/>
+<rect x="988" y="161" width="76" height="33" rx="3" fill="#bd9ad7"/>
+</g>
+<g fill="none" stroke="#526479" stroke-width="2" marker-end="url(#arrow)">
+<path d="M257 174h33"/><path d="M519 174h33"/><path d="M781 174h33"/>
+<path d="M670 244v30H292v23"/><path d="M670 274h167v23"/>
+</g>
+<rect x="36" y="305" width="512" height="196" rx="12" fill="#eaf1ff" stroke="#c5d7f4"/>
+<rect x="572" y="305" width="512" height="196" rx="12" fill="#fff6e4" stroke="#ecd7a7"/>
+<text x="58" y="338" font-size="21" font-weight="700">Across steps: refresh selected regions</text>
+<text x="58" y="370" font-size="16">Detail + residual + refresh history → top-ρ regions</text>
+<rect x="58" y="390" width="220" height="47" rx="8" fill="#2866c3"/>
+<rect x="296" y="390" width="230" height="47" rx="8" fill="#d7dee8"/>
+<text x="75" y="420" fill="white" font-size="17">Active: recompute</text>
+<text x="313" y="420" font-size="17">Inactive: reuse cache</text>
+<text x="58" y="474" font-size="16" fill="#526479">Refresh active predictions and per-layer image KV</text>
+<text x="594" y="338" font-size="21" font-weight="700">Within a step: compress remote context</text>
+<text x="594" y="370" font-size="16">Active queries access one combined KV context</text>
+<rect x="594" y="390" width="211" height="47" rx="8" fill="#d3e3f8"/>
+<rect x="825" y="390" width="237" height="47" rx="8" fill="#f2c665"/>
+<text x="609" y="420" font-size="17">Local: full token KV</text>
+<text x="840" y="420" font-size="17">Remote: K + mean V</text>
+<text x="594" y="474" font-size="16" fill="#526479">Grouped SDPA with shared softmax and log-count bias</text>
+<g fill="none" stroke="#526479" stroke-width="2" marker-end="url(#arrow)">
+<path d="M292 502v36h268"/><path d="M837 502v36H560"/>
+</g>
+<rect x="305" y="550" width="510" height="62" rx="12" fill="#15263b"/>
+<text x="330" y="577" font-size="18" fill="white" font-weight="700">Merge active and cached predictions</text>
+<text x="330" y="600" font-size="16" fill="#cbd9eb">Sampler update → next denoising step</text>
+<path d="M560 538v6" fill="none" stroke="#526479" stroke-width="2" marker-end="url(#arrow)"/>
+</g></svg>

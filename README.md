@@ -1,33 +1,122 @@
 # SDiT: Region-Adaptive Sparse Inference for Diffusion Transformers
 
-SDiT uses a shared content-aware partition to coordinate selective denoising,
-image KV reuse, local attention and remote-region summaries. This repository
-provides the image-generation implementation for **Lumina-Next** and
-**HunyuanDiT**, with reproducible configuration files and a command-line runner.
+[Manuscript](https://github.com/linbowen0719-beep/ICLR-2027-SDiT) ·
+[Quickstart](#installation) · [Measured results](#example-benchmark) ·
+[Method](#how-it-works) · [Citation](#citation)
+
+**Training-free acceleration through one shared region partition.** SDiT
+updates selected image regions across denoising steps, keeps full local
+attention, and summarizes remote regions into compact anchors. This repository
+supports **Lumina-Next** and **HunyuanDiT**.
+
+## Visual comparison
+
+**“Peacock in a sunlit garden”** — Lumina-Next, seed 42, 30 steps, 1024×1024.
+
+<table>
+<tr><th>Dense</th><th>SDiT · ρ = 0.4</th><th>SDiT · ρ = 0.2</th></tr>
+<tr>
+<td width="33%"><img src="assets/peacock-dense.png" alt="Dense Lumina-Next output for Peacock in a sunlit garden" width="100%"></td>
+<td width="33%"><img src="assets/peacock-r40.png" alt="SDiT output with 40 percent active regions, same prompt and seed" width="100%"></td>
+<td width="33%"><img src="assets/peacock-r20.png" alt="SDiT output with 20 percent active regions, same prompt and seed" width="100%"></td>
+</tr>
+<tr><td align="center">17.50 s · 1.00×</td><td align="center">8.09 s · 2.16×</td><td align="center">6.27 s · 2.79×</td></tr>
+</table>
+
+Images are the original generated PNGs. Times average two warmed runs of this
+prompt on the same RTX 6000 Ada. Lower ρ refreshes fewer regions; compare both
+settings to choose the quality–latency trade-off for your prompts.
+
+## Example benchmark
+
+Measured on **one RTX 6000 Ada (48 GB)** using the
+[two fixed prompts and seeds](examples/prompts.jsonl) shipped with this repo.
+All methods use 30 steps, 1024×1024, guidance 4 and BF16. Each prompt has one
+excluded warm-up and two timed repeats. Quality metrics average the two paired
+images against dense inference; LPIPS uses AlexNet.
+
+| Method | Time ↓ | Speedup ↑ | PSNR ↑ | SSIM ↑ | LPIPS ↓ | Peak allocation |
+|---|---:|---:|---:|---:|---:|---:|
+| Dense | 18.09 s | 1.00× | — | — | — | 10.40 GiB |
+| SDiT · ρ=0.4 | 7.70 s | 2.35× | 25.34 dB | 0.737 | 0.227 | 10.82 GiB |
+| SDiT · ρ=0.2 | 5.90 s | 3.07× | 23.31 dB | 0.650 | 0.387 | 10.82 GiB |
+
+Peak allocation is measured by PyTorch. [Per-run times, image hashes, versions
+and metrics](docs/readme_benchmark.json) accompany this table.
+These are current-release example measurements; the paper's dataset-scale
+results use its historical experimental configuration.
+
+Reproduce this table after installing the quality-evaluation dependencies:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python scripts/benchmark_examples.py --output outputs/readme
+```
+
+The script runs all variants sequentially, checks that timed and evaluated
+images match, and writes `measurements.json`. Add `--model-path /path/to/model
+--local-files-only` to use a local checkpoint.
+
+## How it works
+
+![SDiT method: a shared region partition coordinates temporal reuse and local-plus-remote attention](assets/method.svg)
+
+After a dense warm-up, Quickshift partitions the predicted clean latent once.
+A detail/residual score and refresh history select active regions. Their queries
+attend to full local KV and remote summaries; inactive regions reuse cached
+predictions and KV. Region-contiguous storage supports grouped SDPA execution.
+
+Defaults follow the manuscript: 20% warm-up, `h=1`, `m=1`, equal detail/residual
+weights, and starvation coefficient 0.1. [Implementation details](docs/implementation.md)
+map the equations to code and specify scheduling, boundaries and anchor groups.
 
 ## Installation
 
-Use Linux, Python 3.10 or 3.11, and an NVIDIA CUDA GPU. Validation uses an
-RTX 6000 Ada with 48 GB VRAM. The default path does not need a custom CUDA
-extension. Use a fresh environment to avoid conflicts with another `ras` install.
+Use Linux, Python 3.10 or 3.11, and an NVIDIA CUDA GPU.
 
 ```bash
+git clone https://github.com/linbowen0719-beep/SDiT.git
+cd SDiT
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-python -m pip install -e '.[dev]'
+python -m pip install -e .
 sdit doctor
 ```
 
-Diffusers 0.35.1 and Transformers 4.56.0 are pinned because this implementation
-patches model internals. Download the model through its original provider and
-follow its model license. The runner accepts a Hub identifier or a local
-Diffusers-format snapshot; model weights are not included here.
+Install optional tools according to your task:
+
+```bash
+# Quality evaluation, including LPIPS and FID
+python -m pip install -e '.[metrics]'
+
+# Development and tests
+python -m pip install -e '.[dev]'
+```
+
+Diffusers 0.35.1 and Transformers 4.56.0 are pinned to match the model adapters.
+The release uses PyTorch SDPA and Triton helpers; no separate attention
+extension needs to be built.
+
+### Models and GPU memory
+
+| Model | Hugging Face checkpoint | Precision / guidance |
+|---|---|---|
+| Lumina-Next | [`Alpha-VLLM/Lumina-Next-SFT-diffusers`](https://huggingface.co/Alpha-VLLM/Lumina-Next-SFT-diffusers) | BF16 / 4 |
+| HunyuanDiT | [`Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers`](https://huggingface.co/Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers) | FP16 / 5 |
+
+The runner downloads the matching checkpoint on first use. For an existing
+Diffusers snapshot, pass `--model-path /path/to/model --local-files-only`.
+Weights are distributed by the model providers under their respective licenses.
+
+At batch size 1 and 1024×1024, this release measured **10.82 GiB** peak
+PyTorch allocation for Lumina SDiT in the example benchmark and **11.33 GiB**
+for the [Hunyuan ρ=0.2 validation run](docs/validation.json). GPU capacity also
+needs headroom for CUDA contexts, reserved memory and workspaces. The tested
+card has 48 GB; a minimum capacity and 24 GB RTX 3090/4090 compatibility have
+not yet been established. CPU inference and CPU offload are not implemented.
 
 ## Generate an image
-
-From the repository root:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 sdit generate \
@@ -36,16 +125,11 @@ CUDA_VISIBLE_DEVICES=0 sdit generate \
   --output outputs/peacock
 ```
 
-For a local model, append `--model-path /path/to/model --local-files-only`.
-HunyuanDiT is available through `configs/hunyuan_sdit_r20.json`, but its
-current presets are experimental: the validation prompt shows visible texture
-artifacts at low active ratios. See [validation](docs/validation.md).
-The defaults are 30 steps,
-20% dense warm-up, one-hop attention, one remote anchor per region and
-active-region ratio 0.2. Lumina uses BF16 and guidance 4; Hunyuan uses FP16 and
-guidance 5. Batch size is one, including the model's classifier-free guidance.
+Use `configs/lumina_sdit_r40.json` for more active regions. Hunyuan configurations
+are `configs/hunyuan_sdit_r20.json` and `configs/hunyuan_sdit_r40.json`.
+`--rho`, `--steps`, `--anchors` and `--hops` override the chosen configuration.
 
-To generate the same inputs with dense inference:
+For paired dense and SDiT generations:
 
 ```bash
 sdit generate --config configs/lumina_sdit_r20.json --method dense \
@@ -54,12 +138,12 @@ sdit generate --config configs/lumina_sdit_r20.json \
   --prompts examples/prompts.jsonl --output outputs/sdit
 ```
 
-Every JSONL record specifies `id`, `prompt`, and `seed`; `negative_prompt` is
-optional. Outputs include PNG images, resolved settings, package versions,
-source hashes, timing records and engine logs. Existing nonempty output
-folders are rejected. `--dry-run` validates inputs without loading weights.
+Each JSONL record specifies `id`, `prompt`, and `seed`; `negative_prompt` is
+optional. Run directories contain PNGs, settings, package versions, source
+hashes, timing records and `engine.log`. Choose a new or empty output directory.
+`--dry-run` checks inputs without loading weights.
 
-## Benchmark
+## Benchmark your prompts
 
 ```bash
 sdit benchmark --config configs/lumina_sdit_r20.json \
@@ -67,77 +151,86 @@ sdit benchmark --config configs/lumina_sdit_r20.json \
   --warmup-runs 1 --repeats 2 --output outputs/benchmark
 ```
 
-The benchmark excludes one full warm-up generation and averages two measured
-GPU runs. The timed pipeline call includes text encoding, denoising, VAE
-and PIL conversion, with CUDA synchronization at both boundaries. Loading,
-per-request state reset and file writing are outside the interval. Each repeat
-starts from the same seed and empty inference caches. Run competing methods on
-the same idle GPU with matching prompts, steps, resolution and guidance.
+Timing uses CUDA synchronization around the pipeline call, including text
+encoding, denoising, VAE decoding and PIL conversion. Model loading, request
+reset and file writing are outside the interval. Each repeat resets the seed
+and inference caches. Compare methods on the same idle GPU with matching inputs.
 
-`--method temporal` retains full image KV context while skipping inactive
-queries. `--method ras` enables the Lumina token-selection baseline;
-`--method teacache` uses the included TeaCache adaptation. These are explicit
-configurations, not promises to reproduce every historical baseline row.
-
-For diagnostic density and module timing, use `sdit generate --analysis`.
-Instrumentation is disabled by default and rejected by the clean benchmark.
-The release uses grouped PyTorch SDPA with Triton cache/projection helpers;
-see [execution details](docs/backends.md).
+Available comparisons are `--method dense`, `--method temporal` (full image KV
+with selective query updates), `--method ras` (Lumina), and `--method teacache`.
+For density and module diagnostics, use `sdit generate --analysis` separately.
+See [execution details](docs/backends.md).
 
 ## Quality evaluation
 
 ```bash
-sdit-evaluate --generated outputs/sdit --dense outputs/dense \
-  --output outputs/quality.json
+sdit evaluate --generated outputs/sdit --dense outputs/dense \
+  --lpips --output outputs/quality.json
 ```
 
-This checks matching prompt/seed/model/step settings, then computes paired
-PSNR and SSIM without downloading a metric model. Install `.[metrics]` to add
-`--lpips` and `--fid`. With `--fid --real /path/to/real-images`, the output also
-includes FID against the explicitly supplied real-image set. Full metric
-protocols and examples are in [evaluation](docs/evaluation.md).
+PSNR and SSIM work with the base installation; `--lpips` uses the metrics extra.
+Metric weights download on first use. The evaluator checks matching prompts,
+seeds, model settings and saved-image hashes. The previous `sdit-evaluate` command remains an alias.
 
-## Implementation and paper correspondence
-
-The default policy follows Sections 4.1–4.3 of the
-[manuscript](https://github.com/linbowen0719-beep/ICLR-2027-SDiT):
-
-- Quickshift partitions the predicted clean latent at the warm-up boundary.
-- Priority combines equally weighted absolute Laplacian and residual magnitude,
-  multiplied by `exp(0.1 * tau)` before region averaging.
-- Inactive tokens retain their latest native predictions and layer KV states.
-- Local regions retain token-level KV; remote regions use centroid-nearest keys,
-  mean values and a log-count bias in the same softmax.
-- Region-contiguous layouts and grouped SDPA execute the sparse workload.
-
-[Implementation details](docs/implementation.md) specify boundary handling,
-subgroup construction and scheduling order. The release aligns these rules with
-the current manuscript; it is not a recovered snapshot of every historical
-experiment. The paper's reported timings and aggregate metrics have not been
-remeasured with this release. [Validation](docs/validation.md) lists the checks
-actually completed.
+For dataset-scale evaluation, add `--fid` to compute **FID_d** against the dense
+image set, and `--real /path/to/real-images` for **FID_r** against real images.
+Use the full evaluation set for FID; the two-image example reports paired
+metrics. See [metric definitions and commands](docs/evaluation.md).
 
 ## Repository layout
 
-- `src/sdit/`: validated public configuration, runner, CLI and evaluation.
-- `src/ras/`: scheduling, attention, cache and model adapters.
-- `configs/`: explicit image-model configurations.
-- `tests/`: cache-refresh, graph-layout, scheduling, diagnostics and CLI checks.
-- `docs/`: implementation, evaluation, backend and validation records.
+| Directory | Contents |
+|---|---|
+| `src/sdit/` | Public CLI, configuration, manuscript policy and evaluation |
+| `src/ras/` | Scheduling, attention, caches and model adapters |
+| `configs/` | Explicit Lumina and Hunyuan settings |
+| `examples/` | Prompt/seed manifest used in the example benchmark |
+| `assets/` | Original comparison images and method diagram |
+| `scripts/` | Example benchmark driver and release-content audit |
+| `tests/` | Numerical, cache, scheduling and CLI tests |
+| `docs/` | Implementation guide, metrics and measurement records |
 
 ```bash
 python -m pytest -q
 python -m build
+python scripts/check_release.py
 ```
 
-The inherited manager holds process-global state. Use one worker process per
-GPU and do not call two runners concurrently in the same process. Video,
-training, CPU inference and arbitrary Diffusers versions are not supported by
-this release interface.
+## Known limitations
+
+- Low active-region ratios can lose texture or structure. Hunyuan `ρ=0.2`
+  produces visible texture artifacts on the peacock validation prompt; its
+  current presets remain experimental. See [validation](docs/validation.md).
+- Small text, fine interactions across regions and very short sampling schedules
+  can need more active computation or richer remote summaries.
+- The current release implements the manuscript's reference policy. The original
+  experimental snapshot used different settings for several policy details;
+  the new measurements above describe this release. See
+  [policy provenance](docs/implementation.md#release-provenance).
+- Use one worker process per GPU: the inherited manager holds process-global
+  state. This release supports image inference, with video left for future work.
+
+## Citation
+
+If you use SDiT, please cite the manuscript and link to this implementation:
+
+```bibtex
+@misc{lin2026sdit,
+  title  = {{SDiT}: Region-Adaptive Sparse Inference for Diffusion Transformers},
+  author = {Bowen Lin and Fanjiang Ye and Yihua Liu and Zhenghui Guo and
+            Boyuan Zhang and Weijian Zheng and Yufan Xu and Tiancheng Xing and
+            Yuke Wang and Chengming Zhang},
+  year   = {2026},
+  url    = {https://github.com/linbowen0719-beep/SDiT},
+  note   = {Manuscript and source code}
+}
+```
 
 ## Attribution and license
 
+SDiT's original code and release tools use the **[MIT License](LICENSE)**.
 The implementation builds on [Microsoft RAS](https://github.com/microsoft/RAS)
-and [Hugging Face Diffusers](https://github.com/huggingface/diffusers).
-See [NOTICE](NOTICE), [LICENSE](LICENSE), and the retained third-party licenses.
-Weights and datasets remain subject to their original licenses.
+(MIT) and [Hugging Face Diffusers](https://github.com/huggingface/diffusers);
+files adapted from Diffusers retain their Apache-2.0 notices. See [NOTICE](NOTICE)
+and [third-party licenses](licenses). Model weights and datasets retain their
+providers' licenses.

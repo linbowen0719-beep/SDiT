@@ -1,0 +1,305 @@
+{
+  "model": "Alpha-VLLM/Lumina-Next-SFT-diffusers",
+  "scope": "Two fixed example prompts, 30 steps, 1024x1024, CFG 4",
+  "timing": "Same GPU; one excluded warm-up and two measured repeats per prompt; synchronized pipeline through PIL conversion",
+  "quality": "Mean paired PSNR, SSIM and LPIPS-Alex on uint8 RGB outputs against dense generation",
+  "memory": "Maximum torch.cuda.max_memory_allocated across measured runs, in GiB",
+  "variants": {
+    "dense": {
+      "config": {
+        "model": "lumina",
+        "method": "dense",
+        "steps": 30,
+        "warmup_steps": 6,
+        "rho": 0.2,
+        "hops": 1,
+        "anchors": 1,
+        "backend": "sdpa",
+        "height": 1024,
+        "width": 1024,
+        "guidance_scale": 4.0,
+        "metric": "paper",
+        "starvation_scale": 0.1,
+        "quickshift_kernel_size": 2.3,
+        "quickshift_max_dist": 6.0,
+        "quickshift_ratio": 0.5,
+        "teacache_threshold": 0.3,
+        "analysis": false
+      },
+      "mean_seconds": 18.085422225296497,
+      "peak_allocated_gib": 10.39515495300293,
+      "timed_runs": [
+        {
+          "id": "peacock",
+          "repeat": 1,
+          "wall_seconds": 17.271202567964792,
+          "pixel_sha256": "31f2908bbf7d7612d28800301b18d0716f29289d38eb022afe4c9c5a8193d569"
+        },
+        {
+          "id": "peacock",
+          "repeat": 2,
+          "wall_seconds": 17.729333452880383,
+          "pixel_sha256": "31f2908bbf7d7612d28800301b18d0716f29289d38eb022afe4c9c5a8193d569"
+        },
+        {
+          "id": "cat",
+          "repeat": 1,
+          "wall_seconds": 18.531936958432198,
+          "pixel_sha256": "61222b0ecdd0d1464ad13cac18148d196b3225131721d9f765241817eebc2116"
+        },
+        {
+          "id": "cat",
+          "repeat": 2,
+          "wall_seconds": 18.809215921908617,
+          "pixel_sha256": "61222b0ecdd0d1464ad13cac18148d196b3225131721d9f765241817eebc2116"
+        }
+      ],
+      "quality": null,
+      "quality_pairs": null,
+      "speedup": 1.0
+    },
+    "r40": {
+      "config": {
+        "model": "lumina",
+        "method": "sdit",
+        "steps": 30,
+        "warmup_steps": 6,
+        "rho": 0.4,
+        "hops": 1,
+        "anchors": 1,
+        "backend": "sdpa",
+        "height": 1024,
+        "width": 1024,
+        "guidance_scale": 4.0,
+        "metric": "paper",
+        "starvation_scale": 0.1,
+        "quickshift_kernel_size": 2.3,
+        "quickshift_max_dist": 6.0,
+        "quickshift_ratio": 0.5,
+        "teacache_threshold": 0.3,
+        "analysis": false
+      },
+      "mean_seconds": 7.701903446577489,
+      "peak_allocated_gib": 10.81704568862915,
+      "timed_runs": [
+        {
+          "id": "peacock",
+          "repeat": 1,
+          "wall_seconds": 8.063141971826553,
+          "pixel_sha256": "ba53873c037c27d3fe9b6548bc55c7dbeec2ff99fa6c0b932738f7a0739a411e"
+        },
+        {
+          "id": "peacock",
+          "repeat": 2,
+          "wall_seconds": 8.115276031196117,
+          "pixel_sha256": "ba53873c037c27d3fe9b6548bc55c7dbeec2ff99fa6c0b932738f7a0739a411e"
+        },
+        {
+          "id": "cat",
+          "repeat": 1,
+          "wall_seconds": 7.3210486732423306,
+          "pixel_sha256": "580652a74d1ea011f084865954ab2f91739eccb10ad4cba44c2f62cc64e7779d"
+        },
+        {
+          "id": "cat",
+          "repeat": 2,
+          "wall_seconds": 7.308147110044956,
+          "pixel_sha256": "580652a74d1ea011f084865954ab2f91739eccb10ad4cba44c2f62cc64e7779d"
+        }
+      ],
+      "quality": {
+        "count": 2,
+        "identical_pairs": 0,
+        "psnr_db": 25.344576277545926,
+        "psnr_infinite": false,
+        "ssim": 0.736746221780777,
+        "lpips": 0.22685576975345612
+      },
+      "quality_pairs": [
+        {
+          "id": "cat",
+          "psnr_db": 28.383954835345783,
+          "identical": false,
+          "ssim": 0.9083630442619324,
+          "lpips": 0.13964024186134338
+        },
+        {
+          "id": "peacock",
+          "psnr_db": 22.305197719746065,
+          "identical": false,
+          "ssim": 0.5651293992996216,
+          "lpips": 0.31407129764556885
+        }
+      ],
+      "speedup": 2.3481756621258545
+    },
+    "r20": {
+      "config": {
+        "model": "lumina",
+        "method": "sdit",
+        "steps": 30,
+        "warmup_steps": 6,
+        "rho": 0.2,
+        "hops": 1,
+        "anchors": 1,
+        "backend": "sdpa",
+        "height": 1024,
+        "width": 1024,
+        "guidance_scale": 4.0,
+        "metric": "paper",
+        "starvation_scale": 0.1,
+        "quickshift_kernel_size": 2.3,
+        "quickshift_max_dist": 6.0,
+        "quickshift_ratio": 0.5,
+        "teacache_threshold": 0.3,
+        "analysis": false
+      },
+      "mean_seconds": 5.900270798243582,
+      "peak_allocated_gib": 10.81704568862915,
+      "timed_runs": [
+        {
+          "id": "peacock",
+          "repeat": 1,
+          "wall_seconds": 6.263240929692984,
+          "pixel_sha256": "d219444df3385940584b7fc0327278199770b5a397b70c82151e05d841bb8344"
+        },
+        {
+          "id": "peacock",
+          "repeat": 2,
+          "wall_seconds": 6.273671809583902,
+          "pixel_sha256": "d219444df3385940584b7fc0327278199770b5a397b70c82151e05d841bb8344"
+        },
+        {
+          "id": "cat",
+          "repeat": 1,
+          "wall_seconds": 5.612680736929178,
+          "pixel_sha256": "ab1b5fe345a206d15a72cfa83ab48520f0dde0255c068c022559f95bdcce26dd"
+        },
+        {
+          "id": "cat",
+          "repeat": 2,
+          "wall_seconds": 5.451489716768265,
+          "pixel_sha256": "ab1b5fe345a206d15a72cfa83ab48520f0dde0255c068c022559f95bdcce26dd"
+        }
+      ],
+      "quality": {
+        "count": 2,
+        "identical_pairs": 0,
+        "psnr_db": 23.30976910800419,
+        "psnr_infinite": false,
+        "ssim": 0.6502705663442612,
+        "lpips": 0.38716334104537964
+      },
+      "quality_pairs": [
+        {
+          "id": "cat",
+          "psnr_db": 25.759005737676482,
+          "identical": false,
+          "ssim": 0.863291323184967,
+          "lpips": 0.2579082250595093
+        },
+        {
+          "id": "peacock",
+          "psnr_db": 20.8605324783319,
+          "identical": false,
+          "ssim": 0.4372498095035553,
+          "lpips": 0.51641845703125
+        }
+      ],
+      "speedup": 3.065185115008661
+    }
+  },
+  "environment": {
+    "python": "3.10.20",
+    "packages": {
+      "torch": "2.6.0+cu124",
+      "diffusers": "0.35.1",
+      "transformers": "4.56.0",
+      "accelerate": "1.14.0",
+      "numpy": "1.26.4",
+      "scikit-image": "0.24.0",
+      "scikit-learn": "1.7.2",
+      "beautifulsoup4": "4.15.0",
+      "ftfy": "6.2.0",
+      "Pillow": "11.3.0",
+      "scipy": "1.15.3",
+      "triton": "3.2.0"
+    },
+    "cuda_runtime": "12.4",
+    "cuda_available": true,
+    "gpu": "NVIDIA RTX 6000 Ada Generation",
+    "torch_threads": 4,
+    "release_version": "0.1.0"
+  },
+  "prompts": [
+    {
+      "id": "peacock",
+      "prompt": "Peacock in a sunlit garden",
+      "seed": 42
+    },
+    {
+      "id": "cat",
+      "prompt": "A cat sitting beside a window in soft morning light",
+      "seed": 43
+    }
+  ],
+  "inference_source_sha256": {
+    "sdit/config.py": "6902a8c5d8266046ba86e2b3c82586e91dee5321cf1d0772ef2f7f9600070ade",
+    "sdit/engine.py": "ea7da33a7d124ede79c6d093a436db23f689c1138129c0eecb7f167c607c1114",
+    "sdit/policy.py": "3fbd7b9a1c51b0a44925d12e0224a4543e46d0475e3c09bcc3848063dc27da46",
+    "ras/__init__.py": "2e07fd91e057eda1bf24416de94612ca214a726f81606b6693da21a50858a729",
+    "ras/modules/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "ras/modules/attention_hook.py": "6dd8ea178e6ea8d3a1f9e5fd8bf8d49d39a0796d7779e3dcdc9c49cfb428f3ea",
+    "ras/modules/attention_processor.py": "aa4d36755cbe698e1ddfd4c27dc0d86e591124d701fcd066ee74d6918362da2e",
+    "ras/modules/complexity_calculator.py": "54be2b77e14609a872fc45143aea8d349c4e455e727d8ff51cc4359c38055b6f",
+    "ras/modules/fdas_module.py": "cfb5e2fd081cae86af14d73d2a19246bd4223f58d4b302eb12fbcf02e583f0a2",
+    "ras/modules/fused_kernels_lumina.py": "b9d881144b20d57358a532ad0d2c1b2f9f164cb5ec683993975e35e17410b465",
+    "ras/modules/hunyuan_dit/teacache_forward.py": "cc78ecbd3488538ef81c13613bc575b94db382e22849ec959991b90fab03c0a7",
+    "ras/modules/hunyuan_dit/transformer_forward.py": "ad0c16bdacbbe27a00598b352e6facfa0f22b3cd89ecadfba48a5bb3a821a38c",
+    "ras/modules/lumina_next_t2i/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ras/modules/lumina_next_t2i/block_forward.py": "38c730d273dd0b1a2479b7860cc24e0ac7b078bc878ea8d278fb398264752765",
+    "ras/modules/lumina_next_t2i/teacache_forward.py": "e0eb2e7c04db2ea525158797641db654e55a8a1c6a8d748ab6e0d66f4662231a",
+    "ras/modules/lumina_next_t2i/text_cache.py": "7b1ee695aefafd1fec2ecdb7309249001bc707c75fd36f39b10bf2c76a5dd965",
+    "ras/modules/lumina_next_t2i/transformer_forward.py": "fcec6ccf56ced091399d7b3ab9378747e198966227ab77e32bd4bb09e1b77299",
+    "ras/modules/patch_state_tracker.py": "85ec2d36fba34b0530b94d47bfb3807a3e758018cc3264ffc7c0d453e923c7a8",
+    "ras/modules/per_patch_denoising.py": "cba3fcb7d0bc391701157a0403c70019ec03594b072e78e3e22d7d7a23083dd6",
+    "ras/modules/triton_anchor_refresh.py": "a2f60eb5408ce6bc96a274ddcbcd6f57a117fc9e6d30ceb0ef758f50b266fdb6",
+    "ras/modules/triton_cluster_attention.py": "e4549345b33a863b06f4df85a23d41decabe87b61f256e538b2c2b066015e09d",
+    "ras/schedulers/__init__.py": "36427281d9e837f4c9a31afb06ac51bef838cc14fd55f82708f13efddd3e0dad",
+    "ras/schedulers/adaptive_complexity_scheduler.py": "34c6461dcee9160dc4e635d692d80e31045b6ffd41b02f5346dcac06806a0913",
+    "ras/schedulers/cluster_adaptive_ddpm_scheduler.py": "a21f2e6adcc4f7e919fae43b92aa062061902c09baebe9aaba76a8284a5a9f81",
+    "ras/schedulers/cluster_adaptive_dpm_solver_scheduler.py": "8a88f6636214a6451255b377bdbdf511e4345e58cf7573d95b0a12d76b0619e5",
+    "ras/schedulers/cluster_adaptive_scheduler.py": "9f8771a897d6f466dc295edacff8b58e4ea888cc413e0f1935df2c54042f1da8",
+    "ras/schedulers/cluster_based_ras_scheduler.py": "276cf46d84955b4a07a8c097a82ee855cf21df93f9d6f099717869c80b73d2fd",
+    "ras/schedulers/ras_scheduling_flow_match_euler_discrete.py": "8a9b3146d4ddedd98e68185bb28c6db7d0c16b20ebb3705be1cfc45370d85149",
+    "ras/schedulers/visualization_scheduler.py": "48f3839f4939c2accab37d8106fe8348754c5d7bfbddacce7f3e6420abb7164a",
+    "ras/utils/__init__.py": "32cd1bc60aa8bd79697751366618abba9b9f050cf332cd6bad18271035c6edf8",
+    "ras/utils/adaptive_complexity_config.py": "4e33290c0cdcad820c42a4113f59d405e24fe8a1e82548cced8dfa2159c8998f",
+    "ras/utils/fdas_config.py": "f522226908c45f4231f8a1d7445fb9ec37c9d3285ad745ae21ef1dd38c9a4f2a",
+    "ras/utils/frequency_utils.py": "e8521d1954fc6067867072674b458448213ec2570e3e976f412dbc2cd76aaf24",
+    "ras/utils/host_cluster_schedule.py": "6e175e91e7ba4ef1e216aa564ac5f7b560cbf29796c1c5f062ac5f5e9c6da569",
+    "ras/utils/hunyuan_dit/update_pipeline_hunyuan.py": "a46c608f6de47ad7973b17f2710c2faf3dd4400a83ff858855b6a1d969b65994",
+    "ras/utils/hunyuan_dit/update_pipeline_hunyuan_teacache.py": "d8dace4a200d130ea871e008fc0a78c8dfec2e7a5b16a6699221e5a8e0f23692",
+    "ras/utils/image_complexity.py": "7becb97589019f1924a5b6b261200a657d06b5635b29e5ff3af178f169e089aa",
+    "ras/utils/lazy_anchor_metadata.py": "7aeffc68b943b673b4f96a35436535553467772e836c920f0f3488df4b02b9f9",
+    "ras/utils/lumina_next_t2i/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ras/utils/lumina_next_t2i/update_pipeline_lumina.py": "8b71ea9465ac78f6dd529545eb774efe716edee8da23702d6ec6b61d08eb4c48",
+    "ras/utils/lumina_next_t2i/update_pipeline_lumina_teacache.py": "b9a64e39d9d915ed097ea25cbca6b8b32c73d69fd7c2cb2be072521c8a8d382d",
+    "ras/utils/patch_utils.py": "b7e533e4b1fc7460498c38c87b2e473fd87335189f95b3a07c92c46abf026a29",
+    "ras/utils/ras_argparser.py": "ed35d34f71b46e99d49ad01f999b9ba78d983cde1a381b5d6f1520f815e70e74",
+    "ras/utils/ras_manager.py": "38010b41d68bc4d013eb8e723f20ec8b573bc795adb3cc6af0c9110d9836437b"
+  },
+  "date": "2026-11-24",
+  "inference_base_commit": "b0495ef",
+  "metric_details": {
+    "psnr": "RGB float32 in [0,1] converted from generated PNG; mean per-image PSNR",
+    "ssim": "scikit-image structural_similarity, channel_axis=2, data_range=1, default 7x7 window",
+    "lpips": "AlexNet, pretrained LPIPS v0.1; RGB scaled to [-1,1]"
+  },
+  "metric_packages": {
+    "lpips": "0.1.4",
+    "torchvision": "0.21.0+cu124",
+    "scikit-image": "0.24.0",
+    "numpy": "1.26.4"
+  }
+}
