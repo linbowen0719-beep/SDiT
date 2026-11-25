@@ -178,39 +178,6 @@ For dataset-scale evaluation, add `--fid` to compute **FID_d** against the dense
 image set, and `--real /path/to/real-images` for **FID_r** against real images.
 Use the full evaluation set for FID. See [metric definitions and commands](docs/evaluation.md).
 
-## Repository layout
-
-| Directory | Contents |
-|---|---|
-| `src/sdit/` | Public CLI, configuration, manuscript policy and evaluation |
-| `src/ras/` | Scheduling, attention, caches and model adapters |
-| `configs/` | Explicit Lumina and Hunyuan settings |
-| `examples/` | Sample prompts and seeds for generation |
-| `assets/` | Comparison and framework figures from the paper |
-| `scripts/` | Example benchmark driver and release-content audit |
-| `tests/` | Numerical, cache, scheduling and CLI tests |
-| `docs/` | Implementation guide, metrics and measurement records |
-
-```bash
-python -m pytest -q
-python -m build
-python scripts/check_release.py
-```
-
-## Known limitations
-
-- Low active-region ratios can lose texture or structure. Hunyuan `ρ=0.2`
-  produces visible texture artifacts on the peacock validation prompt; its
-  current presets remain experimental. See [validation](docs/validation.md).
-- Small text, fine interactions across regions and very short sampling schedules
-  can need more active computation or richer remote summaries.
-- The current release implements the manuscript's reference policy. The original
-  experimental snapshot used different settings for several policy details;
-  see
-  [policy provenance](docs/implementation.md#release-provenance).
-- Use one worker process per GPU: the inherited manager holds process-global
-  state. This release supports image inference, with video left for future work.
-
 ## Citation
 
 If you use SDiT, please cite the manuscript and link to this implementation:
