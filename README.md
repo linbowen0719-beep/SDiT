@@ -1,28 +1,32 @@
 # SDiT: Region-Adaptive Sparse Inference for Diffusion Transformers
 
-[Manuscript](https://github.com/linbowen0719-beep/ICLR-2027-SDiT) ·
-[Quickstart](#installation) · [Paper results](#paper-results) ·
+[Paper](https://github.com/linbowen0719-beep/ICLR-2027-SDiT) ·
+[Quickstart](#installation) · [Results](#results) ·
 [Method](#how-it-works) · [Citation](#citation)
 
-**Training-free acceleration through one shared region partition.** SDiT
-updates selected image regions across denoising steps, keeps full local
-attention, and summarizes remote regions into compact anchors. This repository
-supports **Lumina-Next** and **HunyuanDiT**.
+**SDiT makes diffusion transformers up to 4× faster with no training.** It
+partitions the image into regions once, then uses that single partition for two
+things: deciding which regions to recompute at each denoising step, and
+structuring attention so every region keeps full local context while seeing
+distant regions through compact anchors.
+
+On Lumina-Next at 1024×1024, SDiT reaches a **3.65× speedup** with FID_r 32.12,
+against 37.97 for TeaCache at the same speed. This repository supports
+**Lumina-Next** and **HunyuanDiT**.
 
 ## Visual comparison
 
-![Paper Figure 1: Dense, RAS, TeaCache and SDiT generations with timing labels and region outlines](assets/paper-comparison.png)
+![Dense, RAS, TeaCache and SDiT generations with timing labels and region outlines](assets/paper-comparison.png)
 
-Figure 1 from the paper: Lumina-Next at 30 steps and 1024×1024.
-SDiT preserves fine geometric patterns at **6.49 s (3.65× speedup)**.
+Lumina-Next, 30 steps, 1024×1024. At **6.49 s (3.65×)**, SDiT keeps the fine
+geometric patterns that the other accelerated methods lose.
 
-## Paper results
+## Results
 
-Results reported in **Table 1 of the paper**, evaluated on **5,000 MS-COCO
-prompts at 30 steps and 1024×1024**. FID_d compares against dense generations;
-FID_r compares against real COCO images. Control is each method's setting
-(the active-region ratio ρ for SDiT). Bold marks the best accelerated result
-per metric within each backbone.
+5,000 MS-COCO prompts, 30 steps, 1024×1024. FID_d is measured against dense
+generations and FID_r against real COCO images. *Control* is each method's
+speed setting (for SDiT, the active-region ratio ρ). Bold marks the best
+accelerated result per metric.
 
 ### Lumina-Next
 
@@ -38,8 +42,11 @@ per metric within each backbone.
 | TeaCache | 0.30 | 8.74 | 2.71× | 8.20 | 33.33 | 24.04 |
 | TeaCache | 0.20 | 6.55 | 3.62× | 15.31 | 37.97 | 20.75 |
 
+At matched speed, SDiT beats TeaCache on every metric: at ~2.7× (FID_d 6.66 vs
+8.20) and at ~3.6× (FID_d 9.13 vs 15.31).
+
 <details>
-<summary><strong>HunyuanDiT results</strong></summary>
+<summary><strong>HunyuanDiT</strong></summary>
 
 | Method | Control | Time (s) ↓ | Speedup ↑ | FID_d ↓ | FID_r ↓ | PSNR (dB) ↑ |
 |---|---:|---:|---:|---:|---:|---:|
@@ -55,28 +62,30 @@ per metric within each backbone.
 
 </details>
 
-[Full paper table](https://github.com/linbowen0719-beep/ICLR-2027-SDiT/blob/main/table/table_main_result.tex)
-includes CLIP and MUSIQ. These are paper-reported results under the paper's
-experimental configuration; see [implementation provenance](docs/implementation.md#release-provenance).
+The [full table](https://github.com/linbowen0719-beep/ICLR-2027-SDiT/blob/main/table/table_main_result.tex)
+adds CLIP and MUSIQ. For how this release relates to the paper's experimental
+code, see [release provenance](docs/implementation.md#release-provenance).
 
 ## How it works
 
-![SDiT method: a shared region partition coordinates temporal reuse and local-plus-remote attention](assets/paper-method.png)
+![A shared region partition coordinates temporal reuse and local-plus-remote attention](assets/paper-method.png)
 
-The framework figure above is reproduced from the paper.
+1. **Partition once.** After a short dense warm-up, Quickshift segments the
+   predicted clean latent into regions.
+2. **Pick what to update.** A detail/residual score, combined with each region's
+   refresh history, selects the active regions for the step.
+3. **Attend locally, summarize remotely.** Active queries attend to full KV
+   within their region and to anchor summaries of every other region. Inactive
+   regions reuse their cached predictions and KV.
+4. **Run it fast.** Region-contiguous storage lets attention run as grouped SDPA.
 
-After a dense warm-up, Quickshift partitions the predicted clean latent once.
-A detail/residual score and refresh history select active regions. Their queries
-attend to full local KV and remote summaries; inactive regions reuse cached
-predictions and KV. Region-contiguous storage supports grouped SDPA execution.
-
-Defaults follow the manuscript: 20% warm-up, `h=1`, `m=1`, equal detail/residual
-weights, and starvation coefficient 0.1. [Implementation details](docs/implementation.md)
-map the equations to code and specify scheduling, boundaries and anchor groups.
+Defaults match the paper: 20% warm-up, `h=1`, `m=1`, equal detail and residual
+weights, and starvation coefficient 0.1. The [implementation guide](docs/implementation.md)
+maps each equation to code and covers scheduling, boundaries and anchor groups.
 
 ## Installation
 
-Use Linux, Python 3.10 or 3.11, and an NVIDIA CUDA GPU.
+Requires Linux, Python 3.10 or 3.11, and an NVIDIA CUDA GPU.
 
 ```bash
 git clone https://github.com/linbowen0719-beep/SDiT.git
@@ -89,34 +98,29 @@ python -m pip install -e .
 sdit doctor
 ```
 
-Install optional tools according to your task:
+Optional extras:
 
 ```bash
-# Quality evaluation, including LPIPS and FID
-python -m pip install -e '.[metrics]'
-
-# Development and tests
-python -m pip install -e '.[dev]'
+python -m pip install -e '.[metrics]'   # LPIPS and FID
+python -m pip install -e '.[dev]'       # tests and development
 ```
 
 Diffusers 0.35.1 and Transformers 4.56.0 are pinned to match the model adapters.
-The release uses PyTorch SDPA and Triton helpers; no separate attention
-extension needs to be built.
+Attention runs on PyTorch SDPA and Triton, so there is no extension to compile.
 
-### Models and GPU memory
+### Models
 
 | Model | Hugging Face checkpoint | Precision / guidance |
 |---|---|---|
 | Lumina-Next | [`Alpha-VLLM/Lumina-Next-SFT-diffusers`](https://huggingface.co/Alpha-VLLM/Lumina-Next-SFT-diffusers) | BF16 / 4 |
 | HunyuanDiT | [`Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers`](https://huggingface.co/Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers) | FP16 / 5 |
 
-The runner downloads the matching checkpoint on first use. For an existing
-Diffusers snapshot, pass `--model-path /path/to/model --local-files-only`.
-Weights are distributed by the model providers under their respective licenses.
+Checkpoints download automatically on first run. To use a local Diffusers
+snapshot, pass `--model-path /path/to/model --local-files-only`. Model weights
+are subject to their providers' licenses.
 
-The tested GPU is an RTX 6000 Ada (48 GB). A minimum GPU capacity and
-24 GB RTX 3090/4090 compatibility have not yet been established. CPU inference
-and CPU offload are not implemented.
+All results were measured on an RTX 6000 Ada (48 GB). Smaller GPUs, such as
+24 GB cards, are untested, and CPU inference is not supported.
 
 ## Generate an image
 
@@ -127,11 +131,11 @@ CUDA_VISIBLE_DEVICES=0 sdit generate \
   --output outputs/peacock
 ```
 
-Use `configs/lumina_sdit_r40.json` for more active regions. Hunyuan configurations
-are `configs/hunyuan_sdit_r20.json` and `configs/hunyuan_sdit_r40.json`.
-`--rho`, `--steps`, `--anchors` and `--hops` override the chosen configuration.
+Presets: `configs/lumina_sdit_r20.json` and `lumina_sdit_r40.json` (higher
+quality) for Lumina-Next; `hunyuan_sdit_r20.json` and `hunyuan_sdit_r40.json`
+for HunyuanDiT. Override any preset with `--rho`, `--steps`, `--anchors` or `--hops`.
 
-For paired dense and SDiT generations:
+To generate dense and SDiT images side by side from a prompt file:
 
 ```bash
 sdit generate --config configs/lumina_sdit_r20.json --method dense \
@@ -140,12 +144,13 @@ sdit generate --config configs/lumina_sdit_r20.json \
   --prompts examples/prompts.jsonl --output outputs/sdit
 ```
 
-Each JSONL record specifies `id`, `prompt`, and `seed`; `negative_prompt` is
-optional. Run directories contain PNGs, settings, package versions, source
-hashes, timing records and `engine.log`. Choose a new or empty output directory.
-`--dry-run` checks inputs without loading weights.
+Each JSONL line has `id`, `prompt` and `seed`, plus an optional `negative_prompt`.
+Every run writes its images together with the settings, package versions, source
+hashes, timings and an `engine.log`, so results can be traced back exactly.
+Write each run to a fresh directory. Add `--dry-run` to validate inputs without
+loading weights.
 
-## Benchmark your prompts
+## Benchmark
 
 ```bash
 sdit benchmark --config configs/lumina_sdit_r20.json \
@@ -153,34 +158,31 @@ sdit benchmark --config configs/lumina_sdit_r20.json \
   --warmup-runs 1 --repeats 2 --output outputs/benchmark
 ```
 
-Timing uses CUDA synchronization around the pipeline call, including text
-encoding, denoising, VAE decoding and PIL conversion. Model loading, request
-reset and file writing are outside the interval. Each repeat resets the seed
-and inference caches. Compare methods on the same idle GPU with matching inputs.
+Reported time covers the full pipeline call (text encoding, denoising, VAE
+decoding and PIL conversion) with CUDA synchronization; model loading and file
+I/O are excluded. Seeds and caches reset between repeats.
 
-Available comparisons are `--method dense`, `--method temporal` (full image KV
-with selective query updates), `--method ras` (Lumina), and `--method teacache`.
-For density and module diagnostics, use `sdit generate --analysis` separately.
-See [execution details](docs/backends.md).
+Baselines: `--method dense`, `--method temporal` (selective query updates over
+full image KV), `--method ras` (Lumina-Next only) and `--method teacache`. For
+density and per-module diagnostics, use `sdit generate --analysis`. See
+[execution details](docs/backends.md).
 
-## Quality evaluation
+## Evaluate quality
 
 ```bash
 sdit evaluate --generated outputs/sdit --dense outputs/dense \
   --lpips --output outputs/quality.json
 ```
 
-PSNR and SSIM work with the base installation; `--lpips` uses the metrics extra.
-Metric weights download on first use. The evaluator checks matching prompts,
-seeds, model settings and saved-image hashes. The previous `sdit-evaluate` command remains an alias.
+PSNR and SSIM are built in; `--lpips` needs the `metrics` extra. The evaluator
+verifies that prompts, seeds, model settings and image hashes match between the
+two runs before scoring.
 
-For dataset-scale evaluation, add `--fid` to compute **FID_d** against the dense
-image set, and `--real /path/to/real-images` for **FID_r** against real images.
-Use the full evaluation set for FID. See [metric definitions and commands](docs/evaluation.md).
+For dataset-scale evaluation, `--fid` computes **FID_d** against the dense set,
+and `--real /path/to/real-images` adds **FID_r** against real images. See
+[metrics and commands](docs/evaluation.md).
 
 ## Citation
-
-If you use SDiT, please cite the manuscript and link to this implementation:
 
 ```bibtex
 @misc{lin2026sdit,
@@ -194,11 +196,11 @@ If you use SDiT, please cite the manuscript and link to this implementation:
 }
 ```
 
-## Attribution and license
+## License
 
-SDiT's original code and release tools use the **[MIT License](LICENSE)**.
-The implementation builds on [Microsoft RAS](https://github.com/microsoft/RAS)
-(MIT) and [Hugging Face Diffusers](https://github.com/huggingface/diffusers);
-files adapted from Diffusers retain their Apache-2.0 notices. See [NOTICE](NOTICE)
-and [third-party licenses](licenses). Model weights and datasets retain their
+SDiT is released under the **[MIT License](LICENSE)**. It builds on
+[Microsoft RAS](https://github.com/microsoft/RAS) (MIT) and
+[Hugging Face Diffusers](https://github.com/huggingface/diffusers); files adapted
+from Diffusers keep their Apache-2.0 notices. See [NOTICE](NOTICE) and
+[third-party licenses](licenses). Model weights and datasets remain under their
 providers' licenses.
