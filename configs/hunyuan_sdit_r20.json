@@ -1,0 +1,11 @@
+{
+  "model": "hunyuan",
+  "method": "sdit",
+  "steps": 30,
+  "rho": 0.2,
+  "anchors": 1,
+  "hops": 1,
+  "guidance_scale": 5.0,
+  "backend": "sdpa",
+  "metric": "paper"
+}

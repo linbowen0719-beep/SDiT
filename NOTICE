@@ -1,0 +1,21 @@
+SDiT release preparation
+
+This distribution contains the authors' SDiT research implementation built on
+Microsoft RAS and Hugging Face Diffusers. The `ras` namespace is retained for
+compatibility and does not identify this package as an upstream RAS release.
+
+* Microsoft RAS: https://github.com/microsoft/RAS
+  MIT notice: licenses/RAS-MIT.txt. Existing copyright notices are retained.
+* Hugging Face Diffusers: https://github.com/huggingface/diffusers
+  Files carrying Apache-2.0 headers remain under Apache-2.0;
+  license text: licenses/Apache-2.0.txt. Locally adapted schedulers, transformer
+  forwards and attention processors implement region scheduling and caching.
+New release interface, documentation and tests use the root MIT license.
+The root license does not replace the licenses of third-party-derived files,
+model weights, or datasets. Model weights and datasets are not redistributed.
+
+The source manifest records retained engine files and release modifications.
+This release aligns clean-latent partitioning, refresh scores, prediction reuse
+and geometric anchor selection with the current manuscript. Experimental
+attention extensions and unsupported model adapters are excluded. See
+docs/implementation.md and docs/validation.md for the policy and checks.

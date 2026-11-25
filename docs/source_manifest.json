@@ -1,0 +1,178 @@
+{
+  "source": "Retained files from research snapshot 2026-11-16",
+  "policy": "Current manuscript reference policy, release 2026-11-24",
+  "files": {
+    "src/ras/__init__.py": {
+      "original_sha256": "2e07fd91e057eda1bf24416de94612ca214a726f81606b6693da21a50858a729",
+      "release_sha256": "2e07fd91e057eda1bf24416de94612ca214a726f81606b6693da21a50858a729"
+    },
+    "src/ras/modules/__init__.py": {
+      "original_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "release_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/ras/modules/attention_hook.py": {
+      "original_sha256": "ce4d3e933abcc55442da32764b1c66c3a188ca8f66915e13ccda3a064c232c69",
+      "release_sha256": "6dd8ea178e6ea8d3a1f9e5fd8bf8d49d39a0796d7779e3dcdc9c49cfb428f3ea"
+    },
+    "src/ras/modules/attention_processor.py": {
+      "original_sha256": "c00f3bc97eea99838de041588d452c6e53e33a498d9e5072aa8c78f931926244",
+      "release_sha256": "aa4d36755cbe698e1ddfd4c27dc0d86e591124d701fcd066ee74d6918362da2e"
+    },
+    "src/ras/modules/complexity_calculator.py": {
+      "original_sha256": "54be2b77e14609a872fc45143aea8d349c4e455e727d8ff51cc4359c38055b6f",
+      "release_sha256": "54be2b77e14609a872fc45143aea8d349c4e455e727d8ff51cc4359c38055b6f"
+    },
+    "src/ras/modules/fdas_module.py": {
+      "original_sha256": "cfb5e2fd081cae86af14d73d2a19246bd4223f58d4b302eb12fbcf02e583f0a2",
+      "release_sha256": "cfb5e2fd081cae86af14d73d2a19246bd4223f58d4b302eb12fbcf02e583f0a2"
+    },
+    "src/ras/modules/fused_kernels_lumina.py": {
+      "original_sha256": "b9d881144b20d57358a532ad0d2c1b2f9f164cb5ec683993975e35e17410b465",
+      "release_sha256": "b9d881144b20d57358a532ad0d2c1b2f9f164cb5ec683993975e35e17410b465"
+    },
+    "src/ras/modules/hunyuan_dit/teacache_forward.py": {
+      "original_sha256": "cc78ecbd3488538ef81c13613bc575b94db382e22849ec959991b90fab03c0a7",
+      "release_sha256": "cc78ecbd3488538ef81c13613bc575b94db382e22849ec959991b90fab03c0a7"
+    },
+    "src/ras/modules/hunyuan_dit/transformer_forward.py": {
+      "original_sha256": "ad0c16bdacbbe27a00598b352e6facfa0f22b3cd89ecadfba48a5bb3a821a38c",
+      "release_sha256": "ad0c16bdacbbe27a00598b352e6facfa0f22b3cd89ecadfba48a5bb3a821a38c"
+    },
+    "src/ras/modules/lumina_next_t2i/__init__.py": {
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "release_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src/ras/modules/lumina_next_t2i/block_forward.py": {
+      "original_sha256": "38c730d273dd0b1a2479b7860cc24e0ac7b078bc878ea8d278fb398264752765",
+      "release_sha256": "38c730d273dd0b1a2479b7860cc24e0ac7b078bc878ea8d278fb398264752765"
+    },
+    "src/ras/modules/lumina_next_t2i/teacache_forward.py": {
+      "original_sha256": "e0eb2e7c04db2ea525158797641db654e55a8a1c6a8d748ab6e0d66f4662231a",
+      "release_sha256": "e0eb2e7c04db2ea525158797641db654e55a8a1c6a8d748ab6e0d66f4662231a"
+    },
+    "src/ras/modules/lumina_next_t2i/text_cache.py": {
+      "original_sha256": "7b1ee695aefafd1fec2ecdb7309249001bc707c75fd36f39b10bf2c76a5dd965",
+      "release_sha256": "7b1ee695aefafd1fec2ecdb7309249001bc707c75fd36f39b10bf2c76a5dd965"
+    },
+    "src/ras/modules/lumina_next_t2i/transformer_forward.py": {
+      "original_sha256": "680a932da69ff748c0938763935996c4212f695950e4c17f7e13d5fe51ec8de8",
+      "release_sha256": "fcec6ccf56ced091399d7b3ab9378747e198966227ab77e32bd4bb09e1b77299"
+    },
+    "src/ras/modules/patch_state_tracker.py": {
+      "original_sha256": "85ec2d36fba34b0530b94d47bfb3807a3e758018cc3264ffc7c0d453e923c7a8",
+      "release_sha256": "85ec2d36fba34b0530b94d47bfb3807a3e758018cc3264ffc7c0d453e923c7a8"
+    },
+    "src/ras/modules/per_patch_denoising.py": {
+      "original_sha256": "cba3fcb7d0bc391701157a0403c70019ec03594b072e78e3e22d7d7a23083dd6",
+      "release_sha256": "cba3fcb7d0bc391701157a0403c70019ec03594b072e78e3e22d7d7a23083dd6"
+    },
+    "src/ras/modules/triton_anchor_refresh.py": {
+      "original_sha256": "a2f60eb5408ce6bc96a274ddcbcd6f57a117fc9e6d30ceb0ef758f50b266fdb6",
+      "release_sha256": "a2f60eb5408ce6bc96a274ddcbcd6f57a117fc9e6d30ceb0ef758f50b266fdb6"
+    },
+    "src/ras/modules/triton_cluster_attention.py": {
+      "original_sha256": "e4549345b33a863b06f4df85a23d41decabe87b61f256e538b2c2b066015e09d",
+      "release_sha256": "e4549345b33a863b06f4df85a23d41decabe87b61f256e538b2c2b066015e09d"
+    },
+    "src/ras/schedulers/__init__.py": {
+      "original_sha256": "36427281d9e837f4c9a31afb06ac51bef838cc14fd55f82708f13efddd3e0dad",
+      "release_sha256": "36427281d9e837f4c9a31afb06ac51bef838cc14fd55f82708f13efddd3e0dad"
+    },
+    "src/ras/schedulers/adaptive_complexity_scheduler.py": {
+      "original_sha256": "34c6461dcee9160dc4e635d692d80e31045b6ffd41b02f5346dcac06806a0913",
+      "release_sha256": "34c6461dcee9160dc4e635d692d80e31045b6ffd41b02f5346dcac06806a0913"
+    },
+    "src/ras/schedulers/cluster_adaptive_ddpm_scheduler.py": {
+      "original_sha256": "39769ebb5c3d8e76802b764f3c4c77fc051b10bf93dc3de26ee2e18cc7902995",
+      "release_sha256": "a21f2e6adcc4f7e919fae43b92aa062061902c09baebe9aaba76a8284a5a9f81"
+    },
+    "src/ras/schedulers/cluster_adaptive_dpm_solver_scheduler.py": {
+      "original_sha256": "49167847a4279d5cff5f53a31df753b86c1442492dee97857f0626cef6475e45",
+      "release_sha256": "8a88f6636214a6451255b377bdbdf511e4345e58cf7573d95b0a12d76b0619e5"
+    },
+    "src/ras/schedulers/cluster_adaptive_scheduler.py": {
+      "original_sha256": "2db6b3c24a74103b9c00887ebda1a9e9ad4f62a102a493e4eb11fdcacd8ba267",
+      "release_sha256": "9f8771a897d6f466dc295edacff8b58e4ea888cc413e0f1935df2c54042f1da8"
+    },
+    "src/ras/schedulers/cluster_based_ras_scheduler.py": {
+      "original_sha256": "276cf46d84955b4a07a8c097a82ee855cf21df93f9d6f099717869c80b73d2fd",
+      "release_sha256": "276cf46d84955b4a07a8c097a82ee855cf21df93f9d6f099717869c80b73d2fd"
+    },
+    "src/ras/schedulers/ras_scheduling_flow_match_euler_discrete.py": {
+      "original_sha256": "8a9b3146d4ddedd98e68185bb28c6db7d0c16b20ebb3705be1cfc45370d85149",
+      "release_sha256": "8a9b3146d4ddedd98e68185bb28c6db7d0c16b20ebb3705be1cfc45370d85149"
+    },
+    "src/ras/schedulers/visualization_scheduler.py": {
+      "original_sha256": "9e82d37b8b68691e20e714a1c6abb576f9141a0d137e2625d73af164c1164eab",
+      "release_sha256": "48f3839f4939c2accab37d8106fe8348754c5d7bfbddacce7f3e6420abb7164a"
+    },
+    "src/ras/utils/__init__.py": {
+      "original_sha256": "32cd1bc60aa8bd79697751366618abba9b9f050cf332cd6bad18271035c6edf8",
+      "release_sha256": "32cd1bc60aa8bd79697751366618abba9b9f050cf332cd6bad18271035c6edf8"
+    },
+    "src/ras/utils/adaptive_complexity_config.py": {
+      "original_sha256": "4e33290c0cdcad820c42a4113f59d405e24fe8a1e82548cced8dfa2159c8998f",
+      "release_sha256": "4e33290c0cdcad820c42a4113f59d405e24fe8a1e82548cced8dfa2159c8998f"
+    },
+    "src/ras/utils/fdas_config.py": {
+      "original_sha256": "f522226908c45f4231f8a1d7445fb9ec37c9d3285ad745ae21ef1dd38c9a4f2a",
+      "release_sha256": "f522226908c45f4231f8a1d7445fb9ec37c9d3285ad745ae21ef1dd38c9a4f2a"
+    },
+    "src/ras/utils/frequency_utils.py": {
+      "original_sha256": "e8521d1954fc6067867072674b458448213ec2570e3e976f412dbc2cd76aaf24",
+      "release_sha256": "e8521d1954fc6067867072674b458448213ec2570e3e976f412dbc2cd76aaf24"
+    },
+    "src/ras/utils/host_cluster_schedule.py": {
+      "original_sha256": "6e175e91e7ba4ef1e216aa564ac5f7b560cbf29796c1c5f062ac5f5e9c6da569",
+      "release_sha256": "6e175e91e7ba4ef1e216aa564ac5f7b560cbf29796c1c5f062ac5f5e9c6da569"
+    },
+    "src/ras/utils/hunyuan_dit/update_pipeline_hunyuan.py": {
+      "original_sha256": "a46c608f6de47ad7973b17f2710c2faf3dd4400a83ff858855b6a1d969b65994",
+      "release_sha256": "a46c608f6de47ad7973b17f2710c2faf3dd4400a83ff858855b6a1d969b65994"
+    },
+    "src/ras/utils/hunyuan_dit/update_pipeline_hunyuan_teacache.py": {
+      "original_sha256": "d8dace4a200d130ea871e008fc0a78c8dfec2e7a5b16a6699221e5a8e0f23692",
+      "release_sha256": "d8dace4a200d130ea871e008fc0a78c8dfec2e7a5b16a6699221e5a8e0f23692"
+    },
+    "src/ras/utils/image_complexity.py": {
+      "original_sha256": "7becb97589019f1924a5b6b261200a657d06b5635b29e5ff3af178f169e089aa",
+      "release_sha256": "7becb97589019f1924a5b6b261200a657d06b5635b29e5ff3af178f169e089aa"
+    },
+    "src/ras/utils/lazy_anchor_metadata.py": {
+      "original_sha256": "4d863c9f03783180ebebd185dbd0544c341c115a80cd7742f587411fd5d9624d",
+      "release_sha256": "7aeffc68b943b673b4f96a35436535553467772e836c920f0f3488df4b02b9f9"
+    },
+    "src/ras/utils/lumina_next_t2i/__init__.py": {
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "release_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src/ras/utils/lumina_next_t2i/update_pipeline_lumina.py": {
+      "original_sha256": "8b71ea9465ac78f6dd529545eb774efe716edee8da23702d6ec6b61d08eb4c48",
+      "release_sha256": "8b71ea9465ac78f6dd529545eb774efe716edee8da23702d6ec6b61d08eb4c48"
+    },
+    "src/ras/utils/lumina_next_t2i/update_pipeline_lumina_teacache.py": {
+      "original_sha256": "b9a64e39d9d915ed097ea25cbca6b8b32c73d69fd7c2cb2be072521c8a8d382d",
+      "release_sha256": "b9a64e39d9d915ed097ea25cbca6b8b32c73d69fd7c2cb2be072521c8a8d382d"
+    },
+    "src/ras/utils/patch_utils.py": {
+      "original_sha256": "b7e533e4b1fc7460498c38c87b2e473fd87335189f95b3a07c92c46abf026a29",
+      "release_sha256": "b7e533e4b1fc7460498c38c87b2e473fd87335189f95b3a07c92c46abf026a29"
+    },
+    "src/ras/utils/ras_argparser.py": {
+      "original_sha256": "9ab7da8d90c2295a9b92718b602d6890f67f19ca7074cecf7fe971beb2c3adc1",
+      "release_sha256": "ed35d34f71b46e99d49ad01f999b9ba78d983cde1a381b5d6f1520f815e70e74"
+    },
+    "src/ras/utils/ras_manager.py": {
+      "original_sha256": "fc62ce427c8df3761eec2ceec78794a1f77980e8713b0f88b5017dc68562a144",
+      "release_sha256": "38010b41d68bc4d013eb8e723f20ec8b573bc795adb3cc6af0c9110d9836437b"
+    }
+  },
+  "changes": [
+    "Clean-latent partition and scoring input for Lumina and Hunyuan",
+    "Eq. 3 detail/residual priority with equal weights",
+    "Unscaled native prediction reuse",
+    "Spatial centroid representatives and disjoint spatial subgroups",
+    "Remove external attention extensions and unsupported model adapters",
+    "Remove private debug paths"
+  ]
+}

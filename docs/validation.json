@@ -1,0 +1,247 @@
+{
+  "date": "2026-11-24",
+  "scope": "Functional and numerical validation of manuscript-policy release; not aggregate metric or historical timing reproduction",
+  "runs": {
+    "paper-lumina": {
+      "config": {
+        "model": "lumina",
+        "method": "sdit",
+        "steps": 30,
+        "warmup_steps": 6,
+        "rho": 0.2,
+        "hops": 1,
+        "anchors": 1,
+        "backend": "sdpa",
+        "height": 1024,
+        "width": 1024,
+        "guidance_scale": 4.0,
+        "metric": "paper",
+        "starvation_scale": 0.1,
+        "quickshift_kernel_size": 2.3,
+        "quickshift_max_dist": 6.0,
+        "quickshift_ratio": 0.5,
+        "teacache_threshold": 0.3,
+        "analysis": false
+      },
+      "environment": {
+        "python": "3.10.20",
+        "packages": {
+          "torch": "2.6.0+cu124",
+          "diffusers": "0.35.1",
+          "transformers": "4.56.0",
+          "accelerate": "1.14.0",
+          "numpy": "1.26.4",
+          "scikit-image": "0.24.0",
+          "scikit-learn": "1.7.2",
+          "beautifulsoup4": "4.15.0",
+          "ftfy": "6.2.0",
+          "Pillow": "11.3.0",
+          "scipy": "1.15.3",
+          "triton": "3.2.0"
+        },
+        "cuda_runtime": "12.4",
+        "cuda_available": true,
+        "gpu": "NVIDIA RTX 6000 Ada Generation",
+        "torch_threads": 4,
+        "release_version": "0.1.0"
+      },
+      "prompts": [
+        {
+          "id": "sample",
+          "prompt": "Peacock in a sunlit garden",
+          "seed": 42
+        }
+      ],
+      "repeats": [
+        {
+          "pixel_sha256": "d219444df3385940584b7fc0327278199770b5a397b70c82151e05d841bb8344",
+          "actual_image_size": [
+            1024,
+            1024
+          ],
+          "backend_report": {
+            "requested_backend": "grouped_sdpa",
+            "effective_calls": {
+              "sdpa": 912,
+              "grouped_sdpa": 120,
+              "triton": 0
+            },
+            "fallback_reasons": {
+              "grouping_not_applicable_to_single_job": 912
+            },
+            "total_calls": 1032,
+            "effective_call_fractions": {
+              "sdpa": 0.8837209302325582,
+              "grouped_sdpa": 0.11627906976744186,
+              "triton": 0.0
+            },
+            "triton_coverage": 0.0,
+            "is_pure_triton": false,
+            "requested_attention_kernel": "sdpa",
+            "effective_kernel_calls": {
+              "sdpa": 1032,
+              "triton": 0
+            }
+          }
+        },
+        {
+          "pixel_sha256": "d219444df3385940584b7fc0327278199770b5a397b70c82151e05d841bb8344",
+          "actual_image_size": [
+            1024,
+            1024
+          ],
+          "backend_report": {
+            "requested_backend": "grouped_sdpa",
+            "effective_calls": {
+              "sdpa": 912,
+              "grouped_sdpa": 120,
+              "triton": 0
+            },
+            "fallback_reasons": {
+              "grouping_not_applicable_to_single_job": 912
+            },
+            "total_calls": 1032,
+            "effective_call_fractions": {
+              "sdpa": 0.8837209302325582,
+              "grouped_sdpa": 0.11627906976744186,
+              "triton": 0.0
+            },
+            "triton_coverage": 0.0,
+            "is_pure_triton": false,
+            "requested_attention_kernel": "sdpa",
+            "effective_kernel_calls": {
+              "sdpa": 1032,
+              "triton": 0
+            }
+          }
+        }
+      ],
+      "repeat_outputs_identical": true
+    },
+    "paper-hunyuan": {
+      "config": {
+        "model": "hunyuan",
+        "method": "sdit",
+        "steps": 30,
+        "warmup_steps": 6,
+        "rho": 0.2,
+        "hops": 1,
+        "anchors": 1,
+        "backend": "sdpa",
+        "height": 1024,
+        "width": 1024,
+        "guidance_scale": 5.0,
+        "metric": "paper",
+        "starvation_scale": 0.1,
+        "quickshift_kernel_size": 2.3,
+        "quickshift_max_dist": 6.0,
+        "quickshift_ratio": 0.5,
+        "teacache_threshold": 0.3,
+        "analysis": false
+      },
+      "environment": {
+        "python": "3.10.20",
+        "packages": {
+          "torch": "2.6.0+cu124",
+          "diffusers": "0.35.1",
+          "transformers": "4.56.0",
+          "accelerate": "1.14.0",
+          "numpy": "1.26.4",
+          "scikit-image": "0.24.0",
+          "scikit-learn": "1.7.2",
+          "beautifulsoup4": "4.15.0",
+          "ftfy": "6.2.0",
+          "Pillow": "11.3.0",
+          "scipy": "1.15.3",
+          "triton": "3.2.0"
+        },
+        "cuda_runtime": "12.4",
+        "cuda_available": true,
+        "gpu": "NVIDIA RTX 6000 Ada Generation",
+        "torch_threads": 4,
+        "release_version": "0.1.0"
+      },
+      "prompts": [
+        {
+          "id": "sample",
+          "prompt": "Peacock in a sunlit garden",
+          "seed": 42
+        }
+      ],
+      "repeats": [
+        {
+          "pixel_sha256": "86407a53826d4b7efb7680f8eeff5f9ab15d1cd1a16097b5f5e3cd0cced5d516",
+          "actual_image_size": [
+            1024,
+            1024
+          ],
+          "backend_report": {
+            "requested_backend": "grouped_sdpa",
+            "effective_calls": {
+              "sdpa": 1680,
+              "grouped_sdpa": 120,
+              "triton": 0
+            },
+            "fallback_reasons": {
+              "grouping_not_applicable_to_single_job": 1680
+            },
+            "total_calls": 1800,
+            "effective_call_fractions": {
+              "sdpa": 0.9333333333333333,
+              "grouped_sdpa": 0.06666666666666667,
+              "triton": 0.0
+            },
+            "triton_coverage": 0.0,
+            "is_pure_triton": false,
+            "requested_attention_kernel": "sdpa",
+            "effective_kernel_calls": {
+              "sdpa": 1800,
+              "triton": 0
+            }
+          }
+        },
+        {
+          "pixel_sha256": "86407a53826d4b7efb7680f8eeff5f9ab15d1cd1a16097b5f5e3cd0cced5d516",
+          "actual_image_size": [
+            1024,
+            1024
+          ],
+          "backend_report": {
+            "requested_backend": "grouped_sdpa",
+            "effective_calls": {
+              "sdpa": 1680,
+              "grouped_sdpa": 120,
+              "triton": 0
+            },
+            "fallback_reasons": {
+              "grouping_not_applicable_to_single_job": 1680
+            },
+            "total_calls": 1800,
+            "effective_call_fractions": {
+              "sdpa": 0.9333333333333333,
+              "grouped_sdpa": 0.06666666666666667,
+              "triton": 0.0
+            },
+            "triton_coverage": 0.0,
+            "is_pure_triton": false,
+            "requested_attention_kernel": "sdpa",
+            "effective_kernel_calls": {
+              "sdpa": 1800,
+              "triton": 0
+            }
+          }
+        }
+      ],
+      "repeat_outputs_identical": true
+    }
+  },
+  "tests": {
+    "cuda_available": {
+      "passed": 96
+    },
+    "cuda_hidden": {
+      "passed": 79,
+      "skipped": 17
+    }
+  }
+}
